@@ -1,15 +1,30 @@
 (function(context) {
 	'use strict';
 
-	context.Reactor = Reactor;
+	// Expose Reactor to the current context
+	context["Reactor"] = Reactor;
 
-	var top_id        = null;
-	var functions     = [];
-	var contexts      = [];
-	var pending_ids   = {};
+	// The ID of the top most function currently be run within Reactor.run
+	var top_id = null;
+
+	// All top-level functions and contexts
+	// These are stored separately for better minification
+	var functions = [];
+
+	// A map of all functions to be run on the next flush
+	var pending_ids = {};
+
+	// The order in which the functions will be ran on the next flush
 	var pending_order = [];
+
+	// True if a flush is already scheduled
 	var pending_flush = false;
 
+	/**
+	 * Reactive variable
+	 * @param {mixed} initial_value The initial value
+	 * @constructor
+	 */
 	function Reactor(initial_value) {
 		if(!(this instanceof Reactor)) {
 			return new Reactor(initial_value);
@@ -20,6 +35,12 @@
 		this._value = initial_value;
 	}
 
+	/**
+	 * Gets the value of a reactive variable.
+	 * If called within Reactor.run, the function will be re-run when the value
+	 * changes.
+	 * @return {mixed} The current value
+	 */
 	Reactor.prototype.get = function get() {
 		if(top_id !== null && !this._ids[top_id]) {
 			this._ids[top_id] = true;
@@ -29,6 +50,12 @@
 		return this._value;
 	};
 
+	/**
+	 * Sets the value of a reactive variable.
+	 * Queues a re-run of any functions called by Reactor.run that rely on the
+	 * value.
+	 * @param {mixed} new_value The new value
+	 */
 	Reactor.prototype.set = function set(new_value) {
 		if(this._value !== new_value) {
 			this._value = new_value;
@@ -36,6 +63,13 @@
 		}
 	};
 
+	/**
+	 * Runs a function with an optional context.
+	 * If get() is called on reactive variables within the function, the
+	 * function is registered to re-run if the value changes.
+	 * @param  {Function} body    The function to run
+	 * @param  {Object}   context The context of the function ("this")
+	 */
 	Reactor.run = function run(body, context) {
 		if(top_id !== null) {
 			body.call(context);
@@ -44,16 +78,24 @@
 
 		pending_order.push(functions.length);
 
-		functions.push(body);
-		contexts.push(context);
+		functions.push({
+			body    : body,
+			context : context
+		});
 
 		reaction();
 	};
 
+	/**
+	 * Runs all pending functions triggered by reactive variables
+	 */
 	function reaction() {
 		for(var i = 0; i < pending_order.length; ++i) {
 			top_id = pending_order[i];
-			functions[top_id].call(contexts[top_id]);
+
+			var fn = functions[top_id]
+
+			fn.body.call(fn.context);
 		}
 
 		top_id        = null;
@@ -62,6 +104,10 @@
 		pending_flush = false;
 	}
 
+	/**
+	 * Queues an array of function IDs to be run
+	 * @param {Array} ids An array of function IDs
+	 */
 	function flush(ids) {
 		for(var i = 0; i < ids.length; ++i) {
 			var id = ids[i];
