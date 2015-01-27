@@ -22,7 +22,7 @@
 
 	/**
 	 * Reactive variable
-	 * @param {mixed} initial_value The initial value
+	 * @param {*} initial_value The initial value
 	 * @constructor
 	 */
 	function Reactor(initial_value) {
@@ -39,7 +39,7 @@
 	 * Gets the value of a reactive variable.
 	 * If called within Reactor.run, the function will be re-run when the value
 	 * changes.
-	 * @return {mixed} The current value
+	 * @return {*} The current value
 	 */
 	Reactor.prototype.get = function get() {
 		if(top_id !== null && !this._ids[top_id]) {
@@ -54,7 +54,7 @@
 	 * Sets the value of a reactive variable.
 	 * Queues a re-run of any functions called by Reactor.run that rely on the
 	 * value.
-	 * @param {mixed} new_value The new value
+	 * @param {*} new_value The new value
 	 */
 	Reactor.prototype.set = function set(new_value) {
 		if(this._value !== new_value) {
