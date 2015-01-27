@@ -4,8 +4,8 @@
 	}
 
 	context.Reactive = {
-		"function" : ReactiveFunc,
-		"var"      : ReactiveVar
+		"run" : ReactiveFunc,
+		"var" : ReactiveVar
 	};
 
 	var current_func  = null;
