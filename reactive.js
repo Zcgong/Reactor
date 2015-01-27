@@ -10,56 +10,58 @@
 		"var" : ReactiveVar
 	};
 
-	var top_func      = null;
-	var pending_funcs = [];
+	var top_id        = null;
+	var funcs         = [];
+	var pending_ids   = {};
+	var pending_order = [];
 	var pending_flush = false;
 
 	function ReactiveRun(func, context) {
-		var top_level = !top_func;
-
-		if(top_level) {
-			(function ReactiveRunOuter() {
-				top_func = ReactiveRunOuter;
-				func.call(context);
-				top_func = null;
-			}());
-		}
-		else {
+		if(top_id !== null) {
 			func.call(context);
+			return;
 		}
+
+		var id = funcs.length;
+
+		funcs.push(function ReactiveRunOuter() {
+			top_id = id;
+			func.call(context);
+			top_id = null;
+		});
+
+		funcs[id]();
 	}
 
 	function ReactiveVar(initial_value) {
+		this._ids   = {};
+		this._order = [];
 		this._value = initial_value;
-		this._funcs = [];
 	}
 
 	ReactiveVar.prototype.get = function() {
-		var funcs = this._funcs;
-
-		if(top_func && funcs.indexOf(top_func) === -1) {
-			funcs.push(top_func);
+		if(top_id !== null && !this._ids[top_id]) {
+			this._ids[top_id] = true;
+			this._order.push(top_id);
 		}
 
 		return this._value;
 	};
 
 	ReactiveVar.prototype.set = function(new_value) {
-		if(this._value === new_value) {
-			return;
+		if(this._value !== new_value) {
+			this._value = new_value;
+			flush(this._order);
 		}
-
-		this._value = new_value;
-
-		flush(this._funcs);
 	};
 
-	function flush(funcs) {
-		for(var i = 0; i < funcs.length; ++i) {
-			var func = funcs[i];
+	function flush(ids) {
+		for(var i = 0; i < ids.length; ++i) {
+			var id = ids[i];
 
-			if(pending_funcs.indexOf(func) === -1) {
-				pending_funcs.push(func);
+			if(!pending_ids[id]) {
+				pending_ids[id] = true;
+				pending_order.push(id);
 			}
 		}
 
@@ -67,11 +69,14 @@
 			pending_flush = true;
 
 			setTimeout(function() {
-				for(var i = 0; i < pending_funcs.length; ++i) {
-					pending_funcs[i]();
+				for(var i = 0; i < pending_order.length; ++i) {
+					var id = pending_order[i];
+
+					funcs[id]();
 				}
 
-				pending_funcs = [];
+				pending_ids   = {};
+				pending_order = [];
 				pending_flush = false;
 			}, 0);
 		}
