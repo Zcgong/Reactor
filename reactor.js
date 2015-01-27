@@ -1,55 +1,66 @@
 (function(context) {
 	'use strict';
 
-	context.Reactor = Reactor;
+	reactor.run     = run;
+	context.Reactor = reactor;
 
+	var fns           = [];
 	var top_id        = null;
-	var funcs         = [];
 	var pending_ids   = {};
 	var pending_order = [];
 	var pending_flush = false;
 
-	function Reactor(initial_value) {
-		if(!(this instanceof Reactor)) {
-			return new Reactor(initial_value);
-		}
+	function reactor(initial_value) {
+		var ids   = {};
+		var order = [];
+		var value = initial_value;
 
-		this._ids   = {};
-		this._order = [];
-		this._value = initial_value;
+		return function(new_value) {
+			if(arguments.length === 0) {
+				if(top_id !== null && !ids[top_id]) {
+					ids[top_id] = true;
+					order.push(top_id);
+				}
+
+				return value;
+			}
+
+			if(value !== new_value) {
+				value = new_value;
+				flush(order);
+			}
+		};
 	}
 
-	Reactor.prototype.get = function() {
-		if(top_id !== null && !this._ids[top_id]) {
-			this._ids[top_id] = true;
-			this._order.push(top_id);
-		}
-
-		return this._value;
-	};
-
-	Reactor.prototype.set = function(new_value) {
-		if(this._value !== new_value) {
-			this._value = new_value;
-			flush(this._order);
-		}
-	};
-
-	Reactor.run = function ReactorRun(func, context) {
+	function run(body, context) {
 		if(top_id !== null) {
-			func.call(context);
+			body.call(context);
 			return;
 		}
 
-		var id = funcs.length;
+		pending_order.push(fns.length);
 
-		funcs.push(function Reaction() {
-			top_id = id;
-			func.call(context);
-			top_id = null;
+		fns.push({
+			body    : body,
+			context : context
 		});
 
-		funcs[id]();
+		reaction();
+	}
+
+	function reaction() {
+		for(var i = 0; i < pending_order.length; ++i) {
+			top_id = pending_order[i];
+
+			var fn = fns[top_id];
+
+			fn.body.call(fn.context);
+		}
+
+		top_id        = null;
+		pending_ids   = {};
+		pending_order = [];
+		pending_flush = false;
 	}
 
 	function flush(ids) {
@@ -64,18 +75,7 @@
 
 		if(!pending_flush) {
 			pending_flush = true;
-
-			setTimeout(function() {
-				for(var i = 0; i < pending_order.length; ++i) {
-					var id = pending_order[i];
-
-					funcs[id]();
-				}
-
-				pending_ids   = {};
-				pending_order = [];
-				pending_flush = false;
-			}, 0);
+			setTimeout(reaction, 0);
 		}
 	}
 }(this));
