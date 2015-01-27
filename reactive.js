@@ -68,7 +68,7 @@
 
 			setTimeout(function() {
 				for(var i = 0; i < pending_funcs.length; ++i) {
-					funcs[i]();
+					pending_funcs[i]();
 				}
 
 				pending_funcs = [];
