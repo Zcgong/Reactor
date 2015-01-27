@@ -18,13 +18,14 @@
 		var top_level = !top_func;
 
 		if(top_level) {
-			top_func = func.bind(context);
+			(function ReactiveRunOuter() {
+				top_func = ReactiveRunOuter;
+				func.call(context);
+				top_func = null;
+			}());
 		}
-
-		func.call(context);
-
-		if(top_level) {
-			top_func = null;
+		else {
+			func.call(context);
 		}
 	}
 
