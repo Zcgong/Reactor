@@ -1,14 +1,7 @@
 (function(context) {
 	'use strict';
 
-	if(!context) {
-		return;
-	}
-
-	context.Reactive = {
-		"run" : ReactiveRun,
-		"var" : ReactiveVar
-	};
+	context.Reactor = Reactor;
 
 	var top_id        = null;
 	var funcs         = [];
@@ -16,30 +9,17 @@
 	var pending_order = [];
 	var pending_flush = false;
 
-	function ReactiveRun(func, context) {
-		if(top_id !== null) {
-			func.call(context);
-			return;
+	function Reactor(initial_value) {
+		if(!(this instanceof Reactor)) {
+			return new Reactor(initial_value);
 		}
 
-		var id = funcs.length;
-
-		funcs.push(function ReactiveRunOuter() {
-			top_id = id;
-			func.call(context);
-			top_id = null;
-		});
-
-		funcs[id]();
-	}
-
-	function ReactiveVar(initial_value) {
 		this._ids   = {};
 		this._order = [];
 		this._value = initial_value;
 	}
 
-	ReactiveVar.prototype.get = function() {
+	Reactor.prototype.get = function() {
 		if(top_id !== null && !this._ids[top_id]) {
 			this._ids[top_id] = true;
 			this._order.push(top_id);
@@ -48,12 +28,29 @@
 		return this._value;
 	};
 
-	ReactiveVar.prototype.set = function(new_value) {
+	Reactor.prototype.set = function(new_value) {
 		if(this._value !== new_value) {
 			this._value = new_value;
 			flush(this._order);
 		}
 	};
+
+	Reactor.run = function ReactorRun(func, context) {
+		if(top_id !== null) {
+			func.call(context);
+			return;
+		}
+
+		var id = funcs.length;
+
+		funcs.push(function Reaction() {
+			top_id = id;
+			func.call(context);
+			top_id = null;
+		});
+
+		funcs[id]();
+	}
 
 	function flush(ids) {
 		for(var i = 0; i < ids.length; ++i) {
