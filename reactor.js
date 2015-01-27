@@ -1,8 +1,7 @@
 (function(context) {
 	'use strict';
 
-	reactor.run     = run;
-	context.Reactor = reactor;
+	context.Reactor = Reactor;
 
 	var top_id        = null;
 	var functions     = [];
@@ -11,29 +10,33 @@
 	var pending_order = [];
 	var pending_flush = false;
 
-	function reactor(initial_value) {
-		var ids   = {};
-		var order = [];
-		var value = initial_value;
+	function Reactor(initial_value) {
+		if(!(this instanceof Reactor)) {
+			return new Reactor(initial_value);
+		}
 
-		return function(new_value) {
-			if(arguments.length === 0) {
-				if(top_id !== null && !ids[top_id]) {
-					ids[top_id] = true;
-					order.push(top_id);
-				}
-
-				return value;
-			}
-
-			if(value !== new_value) {
-				value = new_value;
-				flush(order);
-			}
-		};
+		this._ids   = {};
+		this._order = [];
+		this._value = initial_value;
 	}
 
-	function run(body, context) {
+	Reactor.prototype.get = function get() {
+		if(top_id !== null && !this._ids[top_id]) {
+			this._ids[top_id] = true;
+			this._order.push(top_id);
+		}
+
+		return this._value;
+	};
+
+	Reactor.prototype.set = function set(new_value) {
+		if(this._value !== new_value) {
+			this._value = new_value;
+			flush(this._order);
+		}
+	};
+
+	Reactor.run = function run(body, context) {
 		if(top_id !== null) {
 			body.call(context);
 			return;
@@ -45,7 +48,7 @@
 		contexts.push(context);
 
 		reaction();
-	}
+	};
 
 	function reaction() {
 		for(var i = 0; i < pending_order.length; ++i) {
