@@ -1,5 +1,5 @@
 # Reactive
-Simple reactive functions and variables
+Simple reactive JavaScript functions and variables
 
 ## Usage
 
