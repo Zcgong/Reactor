@@ -4,8 +4,9 @@
 	reactor.run     = run;
 	context.Reactor = reactor;
 
-	var fns           = [];
 	var top_id        = null;
+	var functions     = [];
+	var contexts      = [];
 	var pending_ids   = {};
 	var pending_order = [];
 	var pending_flush = false;
@@ -38,12 +39,10 @@
 			return;
 		}
 
-		pending_order.push(fns.length);
+		pending_order.push(functions.length);
 
-		fns.push({
-			body    : body,
-			context : context
-		});
+		functions.push(body);
+		contexts.push(context);
 
 		reaction();
 	}
@@ -51,10 +50,7 @@
 	function reaction() {
 		for(var i = 0; i < pending_order.length; ++i) {
 			top_id = pending_order[i];
-
-			var fn = fns[top_id];
-
-			fn.body.call(fn.context);
+			functions[top_id].call(contexts[top_id]);
 		}
 
 		top_id        = null;
