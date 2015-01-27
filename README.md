@@ -5,7 +5,7 @@ Simple reactive JavaScript functions and variables
 
 ```JS
 // Creates a new reactive variable with a default value
-var my_name = new Reactor('Sam');
+var my_name = Reactor('Sam');
 
 Reactor.run(function() {
 	// Alerts the name initially and any time it changes
