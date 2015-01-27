@@ -6,26 +6,26 @@
 	}
 
 	context.Reactive = {
-		"run" : ReactiveFunc,
+		"run" : ReactiveRun,
 		"var" : ReactiveVar
 	};
 
-	var current_func  = null;
+	var top_func      = null;
 	var pending_funcs = [];
 	var pending_flush = false;
 
-	function ReactiveFunc(func, context) {
-		function current() {
-			func.call(context);
-		};
+	function ReactiveRun(func, context) {
+		var top_level = !top_func;
 
-		if(!current_func) {
-			current_func = current;
+		if(top_level) {
+			top_func = func.bind(context);
 		}
 
-		current();
+		func.call(context);
 
-		current_func = null;
+		if(top_level) {
+			top_func = null;
+		}
 	}
 
 	function ReactiveVar(initial_value) {
@@ -34,11 +34,10 @@
 	}
 
 	ReactiveVar.prototype.get = function() {
-		var funcs   = this._funcs;
-		var current = current_func;
+		var funcs = this._funcs;
 
-		if(current && funcs.indexOf(current) === -1) {
-			funcs.push(current);
+		if(top_func && funcs.indexOf(top_func) === -1) {
+			funcs.push(top_func);
 		}
 
 		return this._value;
