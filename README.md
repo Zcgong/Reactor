@@ -5,18 +5,18 @@ Simple reactive JavaScript functions and variables
 
 ```JS
 // Creates a new reactive variable with a default value
-var my_name = Reactor('Sam');
+var my_name = new Reactor('Sam');
 
 // Run a function reactively
 // Any changes to reactive variables within the function will cause it to re-run
 Reactor.run(function() {
 	// Get the current value of my_name
-	var name = my_name();
+	var name = my_name.get();
 
 	console.log(name);
 });
 
 // Change the value of my_name
 // This causes all functions that rely on the value to re-run
-my_name('Bobby');
+my_name.set('Bobby');
 ```
