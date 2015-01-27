@@ -1,4 +1,6 @@
 (function(context) {
+	'use strict';
+
 	if(!context) {
 		return;
 	}
@@ -27,32 +29,30 @@
 	}
 
 	function ReactiveVar(initial_value) {
-		var value = initial_value;
-		var funcs = [];
-
-		this.get = get;
-		this.set = set;
-
-		function get() {
-			var current = current_func;
-
-			if(current && funcs.indexOf(current) === -1) {
-				funcs.push(current);
-			}
-
-			return value;
-		}
-
-		function set(new_value) {
-			if(value === new_value) {
-				return;
-			}
-
-			value = new_value;
-
-			flush(funcs);
-		}
+		this._value = initial_value;
+		this._funcs = [];
 	}
+
+	ReactiveVar.prototype.get = function() {
+		var funcs   = this._funcs;
+		var current = current_func;
+
+		if(current && funcs.indexOf(current) === -1) {
+			funcs.push(current);
+		}
+
+		return this._value;
+	};
+
+	ReactiveVar.prototype.set = function(new_value) {
+		if(this._value === new_value) {
+			return;
+		}
+
+		this._value = new_value;
+
+		flush(this._funcs);
+	};
 
 	function flush(funcs) {
 		for(var i = 0; i < funcs.length; ++i) {
@@ -67,15 +67,12 @@
 			pending_flush = true;
 
 			setTimeout(function() {
-				flushing = true;
-
 				for(var i = 0; i < pending_funcs.length; ++i) {
 					funcs[i]();
 				}
 
 				pending_funcs = [];
 				pending_flush = false;
-				flushing      = false;
 			}, 0);
 		}
 	}
