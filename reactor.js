@@ -16,7 +16,7 @@
 	// The order in which the functions will be called on the next reaction
 	var pending_order = [];
 
-	// True if an reaction is already scheduled
+	// True if a reaction is already scheduled
 	var pending_reaction = false;
 
 	/**
