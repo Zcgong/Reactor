@@ -2,7 +2,7 @@
 	'use strict';
 
 	// Expose Reactor to the current context
-	context['Reactor'] = Reactor;
+	context.Reactor = Reactor;
 
 	// The ID of the top most function currently running within Reactor.run
 	var top_id = null;
