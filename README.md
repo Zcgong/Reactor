@@ -15,6 +15,12 @@ Reactor(function() {
 my_name.set('Bobby');
 ```
 
+The above code outputs the following to the console:
+```
+Sammy
+Bobby
+```
+
 ## Slow Start
 
 ### Creating Reactors
