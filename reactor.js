@@ -4,16 +4,16 @@
 	// Expose Reactor to the current context
 	context["Reactor"] = Reactor;
 
-	// The ID of the top most function currently be run within Reactor.run
+	// The ID of the top most function currently running within Reactor.run
 	var top_id = null;
 
-	// Top-level functions and contexts
+	// Top-level functions
 	var functions = [];
 
-	// A map of all functions to be run on the next flush
+	// A map of all functions to be called on the next flush
 	var pending_ids = {};
 
-	// The order in which the functions will be ran on the next flush
+	// The order in which the functions will be called on the next flush
 	var pending_order = [];
 
 	// True if a flush is already scheduled
