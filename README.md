@@ -1,9 +1,14 @@
 # Reactor
+
 Simple reactive JavaScript functions and variables
+
+## Overview
+
+Reactor is a library that allows you to write functions that automatically respond to changes to the variables used within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
 
 ## Quick Start
 
-The following example creates a Reactor with a default value and then runs a function that retrieves and logs its value. Afterwards, the value is changed causing the previous function to run again and log the new value.
+The following example creates a Reactor variable with a default value and then runs a function that retrieves and logs its value. Afterwards, the value is changed causing the previous function to run again and log the new value.
 
 ```javascript
 var my_name = new Reactor('Sammy');
