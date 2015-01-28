@@ -98,7 +98,7 @@
 		var type = typeof body;
 
 		if(type !== 'function') {
-			throw new Error('Function expected, found ' + type);
+			throw new Error('Expected function, found ' + type);
 		}
 
 		if(top_id !== null) {
