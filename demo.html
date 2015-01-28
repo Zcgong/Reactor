@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Reactor - Simple reactivity for JavaScript</title>
+		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/semantic-ui/1.8.1/semantic.min.css">
+		<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script src="http://cdn.jsdelivr.net/semantic-ui/1.8.1/semantic.min.js"></script>
+		<script src="./reactor.js"></script>
+	</head>
+
+	<body>
+		<h1>Reactor</h1>
+
+		<input class="first-name-input">
+
+		<div>
+			Hello, <span class="first-name"></span>
+		</div>
+
+		<script>
+			(function() {
+				var name = new Reactor('stranger');
+
+				$(document).on('change', '.first-name-input', function() {
+					name.set(this.value);
+				});
+
+				Reactor.run(function() {
+					$('.first-name').html(name.get());
+				});
+			}());
+		</script>
+	</body>
+</html>
