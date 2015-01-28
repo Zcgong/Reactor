@@ -4,7 +4,7 @@ Simple reactive JavaScript functions and variables
 
 ## Overview
 
-Reactor is a library that allows you to write functions that automatically respond to changes to the variables used within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
+Reactor is a library that allows you to write functions that automatically respond to changes to variables used within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
 
 ## Quick Start
 
