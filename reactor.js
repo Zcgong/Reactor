@@ -4,7 +4,7 @@
 	// Expose Reactor to the current context
 	context.Reactor = Reactor;
 
-	// The ID of the top most function currently running within Reactor.run
+	// The ID of the top most function currently running
 	var top_id = null;
 
 	// Top-level functions
@@ -38,7 +38,7 @@
 	}
 
 	/**
-	 * Registers the current call to Reactor.run as dependent on this variable
+	 * Registers the current top-level function as dependent on this variable
 	 */
 	Reactor.prototype.depend = function depend() {
 		if(top_id !== null && !this._ids[top_id]) {
