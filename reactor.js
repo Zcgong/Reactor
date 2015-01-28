@@ -7,8 +7,7 @@
 	// The ID of the top most function currently be run within Reactor.run
 	var top_id = null;
 
-	// All top-level functions and contexts
-	// These are stored separately for better minification
+	// Top-level functions and contexts
 	var functions = [];
 
 	// A map of all functions to be run on the next flush
