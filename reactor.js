@@ -40,7 +40,7 @@
 	/**
 	 * Registers the current call to Reactor.run as dependent on this variable
 	 */
-	Reactor.prototype.depend = function() {
+	Reactor.prototype.depend = function depend() {
 		if(top_id !== null && !this._ids[top_id]) {
 			this._ids[top_id] = true;
 			this._order.push(top_id);
@@ -50,7 +50,7 @@
 	/**
 	 * Queues a re-run of all dependent functions
 	 */
-	Reactor.prototype.act = function() {
+	Reactor.prototype.act = function act() {
 		var order = this._order;
 
 		for(var i = 0; i < order.length; ++i) {
