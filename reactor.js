@@ -10,23 +10,26 @@
 	// Top-level functions
 	var functions = [];
 
-	// A map of all functions to be called on the next flush
+	// A map of all functions to be called on the next reaction
 	var pending_ids = {};
 
-	// The order in which the functions will be called on the next flush
+	// The order in which the functions will be called on the next reaction
 	var pending_order = [];
 
-	// True if a flush is already scheduled
-	var pending_flush = false;
+	// True if an reaction is already scheduled
+	var pending_reaction = false;
 
 	/**
-	 * Reactive variable
+	 * Reactive variable constructor
+	 * If not called as a constructor, a function and optional context can be
+	 * passed that becomes dependent on variables used within it
 	 * @param {*} initial_value The initial value
-	 * @constructor
 	 */
 	function Reactor(initial_value) {
+		// If not called as a constructor, pass the arguments to run()
 		if(!(this instanceof Reactor)) {
-			return new Reactor(initial_value);
+			run.apply(null, arguments);
+			return;
 		}
 
 		this._ids   = {};
@@ -35,41 +38,69 @@
 	}
 
 	/**
-	 * Gets the value of a reactive variable.
-	 * If called within Reactor.run, the function will be re-run when the value
-	 * changes.
-	 * @return {*} The current value
+	 * Registers the current call to Reactor.run as dependent on this variable
 	 */
-	Reactor.prototype.get = function get() {
+	Reactor.prototype.depend = function() {
 		if(top_id !== null && !this._ids[top_id]) {
 			this._ids[top_id] = true;
 			this._order.push(top_id);
 		}
+	}
 
+	/**
+	 * Queues a re-run of all dependent functions
+	 */
+	Reactor.prototype.act = function() {
+		var order = this._order;
+
+		for(var i = 0; i < order.length; ++i) {
+			var id = order[i];
+
+			if(!pending_ids[id]) {
+				pending_ids[id] = true;
+				pending_order.push(id);
+			}
+		}
+
+		if(!pending_reaction) {
+			pending_reaction = true;
+			setTimeout(reaction, 0);
+		}
+	};
+
+	/**
+	 * Gets the value
+	 * changes.
+	 * @return {*} The current value
+	 */
+	Reactor.prototype.get = function get() {
+		this.depend();
 		return this._value;
 	};
 
 	/**
-	 * Sets the value of a reactive variable.
-	 * Queues a re-run of any functions called by Reactor.run that rely on the
-	 * value.
+	 * Sets the value
 	 * @param {*} new_value The new value
 	 */
 	Reactor.prototype.set = function set(new_value) {
 		if(this._value !== new_value) {
 			this._value = new_value;
-			flush(this._order);
+			this.act();
 		}
 	};
 
 	/**
-	 * Runs a function with an optional context.
-	 * If get() is called on reactive variables within the function, the
-	 * function is registered to re-run if the value changes.
+	 * Runs a function and tracks reactive variables within it
 	 * @param  {Function} body    The function to run
 	 * @param  {Object}   context The context of the function ("this")
 	 */
-	Reactor.run = function run(body, context) {
+	function run(body, context) {
+		var type = typeof body;
+
+		if(type !== 'function') {
+			throw new Error('Function expected, found ' + type);
+		}
+
 		if(top_id !== null) {
 			body.call(context);
 			return;
@@ -91,9 +122,9 @@
 	function reaction() {
 		var order = pending_order;
 
-		pending_ids   = {};
-		pending_order = [];
-		pending_flush = false;
+		pending_ids      = {};
+		pending_order    = [];
+		pending_reaction = false;
 
 		for(var i = 0; i < order.length; ++i) {
 			top_id = order[i];
@@ -104,25 +135,5 @@
 		}
 
 		top_id = null;
-	}
-
-	/**
-	 * Queues an array of function IDs to be run
-	 * @param {Array} ids An array of function IDs
-	 */
-	function flush(ids) {
-		for(var i = 0; i < ids.length; ++i) {
-			var id = ids[i];
-
-			if(!pending_ids[id]) {
-				pending_ids[id] = true;
-				pending_order.push(id);
-			}
-		}
-
-		if(!pending_flush) {
-			pending_flush = true;
-			setTimeout(reaction, 0);
-		}
 	}
 }(this));

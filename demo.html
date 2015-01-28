@@ -16,17 +16,28 @@
 		<div>
 			Hello, <span class="first-name"></span>
 		</div>
+		<div>
+			Random Number: <span class="random-number"></span>
+		</div>
 
 		<script>
 			(function() {
-				var name = new Reactor('stranger');
+				var name   = new Reactor('stranger');
+				var random = new Reactor();
 
 				$(document).on('change', '.first-name-input', function() {
 					name.set(this.value);
+					random.act();
 				});
 
-				Reactor.run(function() {
+				Reactor(function() {
 					$('.first-name').html(name.get());
+				});
+
+				Reactor(function() {
+					random.depend();
+
+					$('.random-number').html(Math.random());
 				});
 			}());
 		</script>
