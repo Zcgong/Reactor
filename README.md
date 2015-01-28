@@ -6,7 +6,7 @@ Simple reactive JavaScript functions and variables
 The following example creates a Reactor with a default value and then runs a function that retrieves and logs its value. Afterwards, the value is changed causing the previous function to run again and log the new value.
 
 ```javascript
-var my_name = new Reactor('Sam');
+var my_name = new Reactor('Sammy');
 
 Reactor(function() {
 	console.log(my_name.get());
@@ -22,7 +22,7 @@ my_name.set('Bobby');
 Reactors are created using *new Reactor()*. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the *get()*/*set()* methods.
 
 ```javascript
-var my_name = new Reactor('Sam');
+var my_name = new Reactor('Sammy');
 var my_age  = new Reactor();
 
 my_age.set(12);
