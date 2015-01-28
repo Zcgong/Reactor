@@ -47,7 +47,7 @@ console.log(my_age.get());
 
 ### Creating Reactor Functions
 
-Reactor Functions are created using *Reactor(function() {})*. If a Reactor's value is retrieved via *get()* within them, they are registered as dependent on that Reactor and will be re-run when the value changes.
+Reactor Functions are created using *Reactor(function() {})*. Within the passed in function, if a Reactor's value is retrieved via *get()*, the function is registered as dependent on that value and will be re-run when the value changes.
 
 Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
