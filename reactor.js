@@ -2,7 +2,7 @@
 	'use strict';
 
 	// Expose Reactor to the current context
-	context["Reactor"] = Reactor;
+	context['Reactor'] = Reactor;
 
 	// The ID of the top most function currently running within Reactor.run
 	var top_id = null;
@@ -89,18 +89,21 @@
 	 * Runs all pending functions triggered by reactive variables
 	 */
 	function reaction() {
-		for(var i = 0; i < pending_order.length; ++i) {
-			top_id = pending_order[i];
+		var order = pending_order;
 
-			var fn = functions[top_id]
+		pending_ids   = {};
+		pending_order = [];
+		pending_flush = false;
+
+		for(var i = 0; i < order.length; ++i) {
+			top_id = order[i];
+
+			var fn = functions[top_id];
 
 			fn.body.call(fn.context);
 		}
 
-		top_id        = null;
-		pending_ids   = {};
-		pending_order = [];
-		pending_flush = false;
+		top_id = null;
 	}
 
 	/**

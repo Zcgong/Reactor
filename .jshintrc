@@ -1,0 +1,31 @@
+{
+	"bitwise"  : true,
+	"curly"    : true,
+	"esnext"   : true,
+	"eqeqeq"   : true,
+	"freeze"   : true,
+	"immed"    : true,
+	"indent"   : 4,
+	"latedef"  : "nofunc",
+	"newcap"   : true,
+	"noarg"    : true,
+	"noempty"  : true,
+	"nonbsp"   : true,
+	"nonew"    : true,
+	"quotmark" : "single",
+	"undef"    : true,
+	"unused"   : true,
+	"strict"   : true,
+	"trailing" : true,
+	"maxlen"   : 120,
+	"shadow"   : true,
+
+	"browser" : true,
+	"devel"   : true,
+	"jquery"  : true,
+	"node"    : true,
+
+	"predef" : {
+		"Reactor" : true,
+	}
+}
