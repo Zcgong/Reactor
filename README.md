@@ -30,7 +30,7 @@ Bobby
 
 ### Creating Reactors
 
-Reactors are created using *new Reactor()*. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the *get()*/*set()* methods.
+Reactors are created using *new Reactor()*. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the **get()**/**set()** methods.
 
 ```javascript
 var my_name = new Reactor('Sammy');
@@ -47,7 +47,7 @@ console.log(my_age.get());
 
 ### Creating Reactor Functions
 
-Reactor Functions are created using *Reactor(function() {})*. Within the passed in function, if a Reactor's value is retrieved via *get()*, the function is registered as dependent on that value and will be re-run when the value changes.
+Reactor Functions are created using *Reactor(function() {})*. Within the passed in function, if a Reactor's value is retrieved via **get()**, the function is registered as dependent on that value and will be re-run when the value changes. If the value of a Reactor is not needed but you still want a function dependent on it, you can use the **depend()** method.
 
 Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
@@ -60,8 +60,10 @@ Reactor(function() {
 	console.log(name + ' ' + age);
 });
 
-// This function is dependent on my_name
+// This function is dependent on my_name and my_activator
 Reactor(function() {
+	my_activator.depend();
+
 	console.log('Hello, ' + my_name.get());
 });
 ```
@@ -71,9 +73,9 @@ Reactor(function() {
 
 ### Triggering a Reaction
 
-Any time a Reactor's value is changed using *set()*, all functions dependent on it will be re-run. This is called a reaction.
+Any time a Reactor's value is changed using **set()**, all functions dependent on it will be re-run. This is called a reaction. A reaction only occurs if the new value fails a strict equality comparison with the previous value. A reaction can also be triggered without changing the value by calling **act()**.
 
-A reaction only occurs if the new value fails strict equality with the previous value. This helps prevent infinite loops when *set()* is called within a Reactor Function.
+Be careful when dealing with objects and arrays! Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
 
 ```javascript
 my_name.set('Bobby');
@@ -90,7 +92,7 @@ When a reaction is triggered, it is not executed immediately. Instead, it is sch
 
 Reactors do not need to have values. In some cases, it's useful to have a Reactor whose sole purpose is to activate Reactor Functions explicitly.
 
-Because they hold no values, use *depend()*/*act()* instead of *get()*/*set()*, respectively.
+Because they hold no values, use **depend()**/**act()** instead of **get()**/**set()**, respectively.
 
 ```javascript
 var my_activator = new Reactor();
@@ -112,7 +114,7 @@ Creates a new Reactor with an optional default value.
 
 ### Reactor(function, [context])
 
-Runs a function with an optional context ("this"). If *get()*/*depend()* is called on a Reactor within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
+Runs a function with an optional context ("this"). If **get()**/**depend()** is called on a Reactor within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
 
 ### *&lt;Reactor&gt;*.get()
 
