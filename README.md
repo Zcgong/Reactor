@@ -60,9 +60,9 @@ Reactor(function() {
 	console.log(name + ' ' + age);
 });
 
-// This function is dependent on my_name and my_activator
+// This function is also dependent on my_name and my_age
 Reactor(function() {
-	my_activator.depend();
+	my_age.depend();
 
 	console.log('Hello, ' + my_name.get());
 });
@@ -79,10 +79,7 @@ Be careful when dealing with objects and arrays. Modifying a property on an obje
 
 ```javascript
 my_name.set('Bobby');
-
-Reactor(function() {
-	my_name.set('Willy');
-});
+my_age.act();
 ```
 
 When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically after only a few milliseconds). This is so that multiple, rapid changes to the value are aggregated into a single reaction.
