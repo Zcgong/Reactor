@@ -20,21 +20,42 @@
 	var pending_reaction = false;
 
 	/**
-	 * Reactive variable constructor
-	 * If not called as a constructor, a function and optional context can be
-	 * passed that becomes dependent on variables used within it
-	 * @param {*} initial_value The initial value
+	 * Constructor: Creates a reactive variable
+	 * #param {*} default_value The default value
+	 * -------------------------------------------------------------------------
+	 * Function: Calls a function with an optional context
+	 * @param {Function} body    The function to call
+	 * @param {Object}   context The context of the function ("this")
 	 */
-	function Reactor(initial_value) {
-		// If not called as a constructor, pass the arguments to run()
-		if(!(this instanceof Reactor)) {
-			run.apply(null, arguments);
-			return;
+	function Reactor(body, context) {
+		// If called as a constructor
+		if(this instanceof Reactor) {
+			this._ids   = {};
+			this._order = [];
+			this._value = body;
 		}
+		// Called as a function
+		else {
+			if(typeof body !== 'function') {
+				throw new Error('Expected function, found ' + typeof body);
+			}
 
-		this._ids   = {};
-		this._order = [];
-		this._value = initial_value;
+			if(top_id === null) {
+				top_id = functions.length;
+
+				functions.push({
+					body    : body,
+					context : context
+				});
+
+				body.call(context);
+
+				top_id = null;
+			}
+			else {
+				body.call(context);
+			}
+		}
 	}
 
 	/**
@@ -87,33 +108,6 @@
 			this._value = new_value;
 			this.act();
 		}
-	};
-
-	/**
-	 * Runs a function and tracks reactive variables within it
-	 * @param  {Function} body    The function to run
-	 * @param  {Object}   context The context of the function ("this")
-	 */
-	function run(body, context) {
-		var type = typeof body;
-
-		if(type !== 'function') {
-			throw new Error('Expected function, found ' + type);
-		}
-
-		if(top_id !== null) {
-			body.call(context);
-			return;
-		}
-
-		pending_order.push(functions.length);
-
-		functions.push({
-			body    : body,
-			context : context
-		});
-
-		reaction();
 	};
 
 	/**
