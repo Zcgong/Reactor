@@ -70,10 +70,6 @@
 		"beforeOpeningCurlyBrace" : true
 	},
 
-	"requireTrailingComma" : {
-		"ignoreSingleLine" : true
-	},
-
 	"validateJSDoc" : {
 		"checkParamNames"      : true,
 		"requireParamTypes"    : true,
