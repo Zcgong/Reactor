@@ -1,6 +1,6 @@
 # Reactor
 
-A micro reactive programming library for JS
+A reactive programming library for JS
 
 ## Overview
 
