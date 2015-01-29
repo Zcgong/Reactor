@@ -30,7 +30,7 @@ Bobby
 
 ### Creating Reactors
 
-Reactors are created using *new Reactor()*. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the **get()**/**set()** methods.
+Reactors are created using ***new Reactor()***. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the **get()**/**set()** methods.
 
 ```javascript
 var my_name = new Reactor('Sammy');
@@ -47,7 +47,7 @@ console.log(my_age.get());
 
 ### Creating Reactor Functions
 
-Reactor Functions are created using *Reactor(function() {})*. Within the passed in function, if a Reactor's value is retrieved via **get()**, the function is registered as dependent on that value and will be re-run when the value changes. If the value of a Reactor is not needed but you still want a function dependent on it, you can use the **depend()** method.
+Reactor Functions are created using ***Reactor(&lt;function&gt;)***. Within the passed in function, if a Reactor's value is retrieved via **get()**, the function is registered as dependent on that value and will be re-run when the value changes. If the value of a Reactor is not needed but you still want a function dependent on it, you can use the **depend()** method.
 
 Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
@@ -75,7 +75,7 @@ Reactor(function() {
 
 Any time a Reactor's value is changed using **set()**, all functions dependent on it will be re-run. This is called a reaction. A reaction only occurs if the new value fails a strict equality comparison with the previous value. A reaction can also be triggered without changing the value by calling **act()**.
 
-Be careful when dealing with objects and arrays! Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
+Be careful when dealing with objects and arrays. Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
 
 ```javascript
 my_name.set('Bobby');
