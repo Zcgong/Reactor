@@ -28,7 +28,7 @@
 	 * @param {Object}   context The context of the function ("this")
 	 */
 	function Reactor(body, context) {
-		// If called as a constructor
+		// Called as a constructor
 		if(this instanceof Reactor) {
 			this._ids   = {};
 			this._order = [];
