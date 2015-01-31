@@ -1,0 +1,23 @@
+{
+  "name": "Reactor",
+  "version": "1.0.0",
+  "description": "Reactive programming made easy",
+  "main": "reactor.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sinova/Reactor.git"
+  },
+  "keywords": [
+    "reactive",
+    "reactor",
+    "observe"
+  ],
+  "author": "Samuel Hodge <samuel.hodge@live.com> (https://github.com/Sinova)",
+  "license": "GPLv2",
+  "bugs": {
+    "url": "https://github.com/Sinova/Reactor/issues"
+  },
+  "homepage": "https://github.com/Sinova/Reactor"
+}

@@ -1,8 +1,18 @@
 (function(context) {
 	'use strict';
 
-	// Expose Reactor to the current context
-	context.Reactor = Reactor;
+	// Export Reactor
+	if(typeof module !== 'undefined' && module.exports) {
+		module.exports = Reactor;
+	}
+	else if(typeof define === 'function' && define.amd) {
+		define([], function() {
+			return Reactor;
+		});
+	}
+	else {
+		context.Reactor = Reactor;
+	}
 
 	// The ID of the top most function currently running
 	var top_function = null;
