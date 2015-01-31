@@ -2,13 +2,38 @@
 
 A reactive programming library for JS
 
+
 ## Overview
 
-Reactor is a library that allows you to write functions that automatically respond to changes to variables used within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
+Reactor is a library that allows you to write functions that automatically respond to variable changes within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
+
+
+## Installation
+
+#### Browser
+
+```html
+<script src="path/to/reactor.js"></script>
+```
+
+#### Node
+
+```bash
+$ npm install reactor-lib
+```
+
+```javascript
+var Reactor = require('reactor-lib');
+```
+
 
 ## Quick Start
 
-The following example creates a Reactor variable with a default value and then runs a function that retrieves and logs its value. Afterwards, the value is changed causing the previous function to run again and log the new value.
+The following example:
+
+1. Creates a Reactor with a default value.
+2. Runs a function that retrieves and logs its value.
+3. Changes the value of the Reactor which automatically runs the previous function and logs the new value.
 
 ```javascript
 var my_name = new Reactor('Sammy');
@@ -28,7 +53,7 @@ Bobby
 
 ## Slow Start
 
-### Creating Reactors
+#### Creating Reactors
 
 Reactors are created using ***new Reactor()***. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the **get()**/**set()** methods.
 
@@ -45,7 +70,7 @@ console.log(my_age.get());
 > **NOTE:** You must use the *new* keyword when creating a Reactor
 
 
-### Creating Reactor Functions
+#### Creating Reactor Functions
 
 Reactor Functions are created using ***Reactor(&lt;function&gt;)***. Within the passed in function, if a Reactor's value is retrieved via **get()**, the function is registered as dependent on that value and will be re-run when the value changes. If the value of a Reactor is not needed but you still want a function dependent on it, you can use the **depend()** method.
 
@@ -71,7 +96,7 @@ Reactor(function() {
 > **NOTE:** Do not use the *new* keyword when creating a Reactor Function
 
 
-### Triggering a Reaction
+#### Triggering a Reaction
 
 Any time a Reactor's value is changed using **set()**, all functions dependent on it will be re-run. This is called a reaction. A reaction only occurs if the new value fails a strict equality comparison with the previous value. A reaction can also be triggered without changing the value by calling **act()**.
 
@@ -85,7 +110,7 @@ my_age.act();
 When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically after only a few milliseconds). This is so that multiple, rapid changes to the value are aggregated into a single reaction.
 
 
-### Reactors without values
+#### Reactors without values
 
 Reactors do not need to have values. In some cases, it's useful to have a Reactor whose sole purpose is to activate Reactor Functions explicitly.
 
@@ -105,26 +130,26 @@ my_activator.act();
 
 ## API
 
-### new Reactor([default_value])
+#### new Reactor([default_value])
 
 Creates a new Reactor with an optional default value.
 
-### Reactor(function, [context])
+#### Reactor(function, [context])
 
 Runs a function with an optional context ("this"). If **get()**/**depend()** is called on a Reactor within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
 
-### *&lt;Reactor&gt;*.get()
+#### *&lt;Reactor&gt;*.get()
 
 Returns the value of a Reactor
 
-### *&lt;Reactor&gt;*.set(value)
+#### *&lt;Reactor&gt;*.set(value)
 
 Sets the value of a Reactor. If the value is not strictly equal to the previous value, a reaction is scheduled.
 
-### *&lt;Reactor&gt;*.depend()
+#### *&lt;Reactor&gt;*.depend()
 
 Similar to Reactor.get() except it does not return a value. This is useful for Reactors that do not hold values.
 
-### *&lt;Reactor&gt;*.act()
+#### *&lt;Reactor&gt;*.act()
 
 Similar to Reactor.set() except it does not accept a value. This is useful for Reactors that do not hold values or for forcing a reaction without changing the Reactor's value.
