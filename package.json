@@ -1,5 +1,5 @@
 {
-  "name": "reactor",
+  "name": "reactor-lib",
   "version": "1.0.0",
   "description": "Reactive programming made easy",
   "main": "reactor.js",
