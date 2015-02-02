@@ -100,11 +100,28 @@ Reactor(function() {
 
 Any time a Reactor's value is changed using **set()**, all functions dependent on it will be re-run. This is called a reaction. A reaction only occurs if the new value fails a strict equality comparison with the previous value. A reaction can also be triggered without changing the value by calling **act()**.
 
-Be careful when dealing with objects and arrays. Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
-
 ```javascript
 my_name.set('Bobby');
 my_age.act();
+```
+
+Be careful when dealing with objects and arrays. Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
+
+```javascript
+var my_options = new Reactor({});
+
+var options = my_options.get();
+options.foo = true;
+
+// This does not trigger a reaction because the Reactor already stores a reference to the object
+my_options.set(options);
+
+// This triggers a reaction regardless of the value
+my_age.act();
+
+// This triggers a reaction because a different object is being set
+my_options.set({foo : true});
+
 ```
 
 When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically after only a few milliseconds). This is so that multiple, rapid changes to the value are aggregated into a single reaction.
