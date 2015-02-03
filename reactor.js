@@ -14,8 +14,8 @@
 		context.Reactor = Reactor;
 	}
 
-	// The ID of the top most function currently running
-	var top_function = null;
+	// The ID of the top-level function currently running
+	var top_function = 0;
 
 	// Top-level functions
 	var all_functions = [];
@@ -23,43 +23,36 @@
 	// A map of all functions to be called on the next reaction
 	var pending_functions = {};
 
-	// Reaction timeout
-	var pending_reaction = null;
+	// Reaction timeout ID
+	var pending_reaction = 0;
 
 	/**
 	 * Constructor: Creates a reactive variable
 	 * #param {*} default_value The default value
 	 * -----
 	 * Function: Calls a function with an optional context
-	 * @param {Function} body    The function to call
+	 * @param {Function} fn      The function to call
 	 * @param {Object}   context The context of the function ("this")
 	 */
-	function Reactor(body, context) {
+	function Reactor(fn, context) {
 		// Called as a constructor
 		if(this instanceof Reactor) {
-			this._value     = body;
-			this._functions = {};
+			this._val = fn;
+			this._fns = {};
 		}
 		// Called as a function
 		else {
-			if(typeof body !== 'function') {
-				throw new Error('Expected function, found ' + typeof body);
-			}
+			fn = fn.bind(context);
 
-			if(top_function === null) {
-				top_function = all_functions.length;
-
-				all_functions.push({
-					body    : body,
-					context : context
-				});
-
-				body.call(context);
-
-				top_function = null;
+			if(top_function) {
+				fn();
 			}
 			else {
-				body.call(context);
+				top_function = all_functions.push(fn);
+
+				fn();
+
+				top_function = 0;
 			}
 		}
 	}
@@ -68,8 +61,8 @@
 	 * Registers the current top-level function as dependent on this variable
 	 */
 	Reactor.prototype.depend = function depend() {
-		if(top_function !== null && !this._functions[top_function]) {
-			this._functions[top_function] = true;
+		if(top_function) {
+			this._fns[top_function] = true;
 		}
 	}
 
@@ -77,11 +70,11 @@
 	 * Queues a re-run of all dependent functions
 	 */
 	Reactor.prototype.act = function act() {
-		for(var id in this._functions) {
+		for(var id in this._fns) {
 			pending_functions[id] = true;
 		}
 
-		if(pending_reaction === null) {
+		if(!pending_reaction) {
 			pending_reaction = setTimeout(reaction, 0);
 		}
 	};
@@ -93,16 +86,16 @@
 	 */
 	Reactor.prototype.get = function get() {
 		this.depend();
-		return this._value;
+		return this._val;
 	};
 
 	/**
 	 * Sets the value
-	 * @param {*} new_value The new value
+	 * @param {*} value The new value
 	 */
-	Reactor.prototype.set = function set(new_value) {
-		if(this._value !== new_value) {
-			this._value = new_value;
+	Reactor.prototype.set = function set(value) {
+		if(this._val !== value) {
+			this._val = value;
 			this.act();
 		}
 	};
@@ -114,16 +107,13 @@
 		var functions = pending_functions;
 
 		pending_functions = {};
-		pending_reaction  = null;
+		pending_reaction  = 0;
 
 		for(var id in functions) {
-			top_function = id;
-
-			var fn = all_functions[id];
-
-			fn.body.call(fn.context);
+			top_function = id - 1;
+			all_functions[top_function]();
 		}
 
-		top_function = null;
+		top_function = 0;
 	}
 }(this));
