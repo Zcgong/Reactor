@@ -31,9 +31,9 @@ var Reactor = require('reactor-lib');
 
 The following example:
 
-1. Creates a Reactor with a default value.
-2. Runs a function that retrieves and logs its value.
-3. Changes the value of the Reactor which automatically runs the previous function and logs the new value.
+1. Creates a Reactor with a default value
+2. Runs a function that retrieves and logs its value
+3. Changes the value of the Reactor which automatically runs the previous function and logs the new value
 
 ```javascript
 var my_name = new Reactor('Sammy');
@@ -45,7 +45,7 @@ Reactor(function() {
 my_name.set('Bobby');
 ```
 
-The above code outputs the following to the console:
+Output:
 ```
 Sammy
 Bobby
@@ -58,13 +58,19 @@ Bobby
 Reactors are created using ***new Reactor()***. They can hold values and can optionally be initialized with a default value. Their values can then be retrieved/changed anywhere using the **get()**/**set()** methods.
 
 ```javascript
-var my_name = new Reactor('Sammy');
-var my_age  = new Reactor();
+var my_name = new Reactor();
+var my_age  = new Reactor(92);
 
-my_age.set(12);
+my_name.set('Sammy');
 
 console.log(my_name.get());
 console.log(my_age.get());
+```
+
+Output:
+```
+Sammy
+92
 ```
 
 > **NOTE:** You must use the *new* keyword when creating a Reactor
@@ -108,23 +114,27 @@ my_age.act();
 Be careful when dealing with objects and arrays. Modifying a property on an object or array is not detected as a change when calling **set()** unless the object/array you are passing in is different than the one the Reactor is currently storing. If you want to force a reaction after modifying an object/array, use the **act()** method.
 
 ```javascript
-var my_options = new Reactor({});
+var options    = {};
+var my_options = new Reactor(options);
 
-var options = my_options.get();
 options.foo = true;
 
-// This does not trigger a reaction because the Reactor already stores a reference to the object
+// This does not trigger a reaction because the Reactor already stores a reference to options
 my_options.set(options);
 
 // This triggers a reaction regardless of the value
-my_age.act();
+my_options.act();
 
 // This triggers a reaction because a different object is being set
 my_options.set({foo : true});
-
 ```
 
-When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically after only a few milliseconds). This is so that multiple, rapid changes to the value are aggregated into a single reaction.
+
+#### Reaction timing and order
+
+When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically after only a few milliseconds). This is to avoid recursion and to aggregrate rapid changes to multiple Reactors in a single reaction.
+
+For simplicity, the order in which Reactor Functions are executed in a reaction is arbitrary. This is because the order of multiple Reactor Functions with shared Reactor dependencies becomes confusing, unpredictable, and not very useful in practical situations. Your Reactor Functions should be isolated units capable of being called at any time in any order.
 
 
 #### Reactors without values
