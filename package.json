@@ -1,6 +1,6 @@
 {
   "name": "reactor-lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reactive programming made easy",
   "main": "reactor.js",
   "scripts": {
