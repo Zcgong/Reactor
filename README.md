@@ -1,10 +1,5 @@
 # Reactor
 
-A reactive programming library for JS
-
-
-## Overview
-
 Reactor is a library that allows you to write functions that automatically respond to variable changes within them. This allows you to think of your project as a single, static state instead of the constantly changing mess inherent to large projects. Stop tracking changes to your variables and start writing beautiful, intuitive code.
 
 
