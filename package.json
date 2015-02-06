@@ -1,6 +1,6 @@
 {
   "name": "reactor-lib",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Reactive programming made easy",
   "main": "lib/reactor.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "observe"
   ],
   "author": "Samuel Hodge <samuel.hodge@live.com> (https://github.com/Sinova)",
-  "license": "GPLv2",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/Sinova/Reactor/issues"
   },
