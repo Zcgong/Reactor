@@ -5,13 +5,7 @@ Reactor is a library that allows you to write functions that automatically respo
 
 ## Installation
 
-#### Browser
-
-```html
-<script src="path/to/reactor.js"></script>
-```
-
-#### Node
+### Node
 
 ```bash
 $ npm install reactor-lib
@@ -21,6 +15,19 @@ $ npm install reactor-lib
 var Reactor = require('reactor-lib');
 ```
 
+### CDN
+
+```html
+<script src="//cdn.jsdelivr.net/reactor/latest/reactor.min.js"></script>
+```
+
+### Manual
+
+```html
+<script src="path/to/reactor.min.js"></script>
+```
+
+> **NOTE:** For sourcemap support, include *reactor.js* and *reactor.min.js.map* in the same directory as *reactor.min.js*.
 
 ## Quick Start
 
