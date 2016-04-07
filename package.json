@@ -1,10 +1,9 @@
 {
   "name": "reactor-lib",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Simple reactivity",
   "main": "src/reactor.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/ShimShamSam/Reactor.git"
