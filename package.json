@@ -1,23 +1,24 @@
 {
   "name": "reactor-lib",
-  "version": "1.0.3",
-  "description": "Reactive programming made easy",
-  "main": "lib/reactor.js",
+  "version": "2.0.0",
+  "description": "Simple reactivity",
+  "main": "src/reactor.js",
   "scripts": {
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Sinova/Reactor.git"
+    "url": "https://github.com/ShimShamSam/Reactor.git"
   },
   "keywords": [
     "reactive",
     "reactor",
-    "observe"
+    "observe",
+    "tracker"
   ],
-  "author": "Samuel Hodge <samuel.hodge@live.com> (https://github.com/Sinova)",
+  "author": "Samuel Hodge <samuel.hodge@live.com> (https://github.com/ShimShamSam)",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/Sinova/Reactor/issues"
+    "url": "https://github.com/ShimShamSam/Reactor/issues"
   },
-  "homepage": "https://github.com/Sinova/Reactor"
+  "homepage": "https://github.com/ShimShamSam/Reactor"
 }
