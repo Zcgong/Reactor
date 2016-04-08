@@ -90,7 +90,7 @@
 
 	/**
 	 * Calls a function based on its index
-	 * @param  {Number} index The index of the function
+	 * @param {Number} index The index of the function
 	 */
 	function call(index) {
 		chain.push(index);
