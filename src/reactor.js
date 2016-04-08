@@ -115,7 +115,11 @@
 		animation_frame  = null;
 
 		for(var index in functions) {
+			top_function = index;
+
 			top_functions[index]();
 		}
+
+		top_function = null;
 	}
 }(this));
