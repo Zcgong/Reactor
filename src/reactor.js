@@ -9,12 +9,11 @@
 (function(context) {
 	'use strict';
 
-	// Export Reactor
 	if(typeof module !== 'undefined' && module.exports) {
 		module.exports = Reactor;
 	}
 	else if(typeof define === 'function' && define.amd) {
-		define([], function() {
+		define([], function defineReactor() {
 			return Reactor;
 		});
 	}
@@ -22,104 +21,80 @@
 		context.Reactor = Reactor;
 	}
 
-	// The index of the top-level function currently running
-	var top_function = null;
-
-	// Top-level functions
-	var top_functions = [];
-
-	// A map of all functions to be called on the next reaction
-	var pending_functions = {};
-
-	// Reaction timeout ID
-	var animation_frame = null;
+	var functions = [];
+	var chain     = [];
+	var pending   = {};
+	var timeout   = null;
 
 	/**
-	 * Constructor: Creates a reactive variable
-	 * @param {*} default_value The default value
-	 * -------------------------------------------------------------------------
-	 * Function: Calls a function that can depend on reactive variables
-	 * @param {Function} fn The function to call
+	 * As a constructor: Creates a reactive variable with an optional default value
+	 * As a function: Calls the passed in function which can depend on reactive variables
+	 * @param {*|Function} value The default value | The function to call
 	 */
-	function Reactor(fn) {
-		// Called as a constructor
+	function Reactor(value) {
 		if(this instanceof Reactor) {
-			var functions        = {};
-			var current_value    = fn;
-			var trigger_function = trigger.bind(functions);
+			var dependents = {};
 
-			var reactor = function Reactor(value) {
-				// Getting the value
+			var reactor = function Reactor(new_value) {
 				if(!arguments.length) {
-					// Set a dependency on the top-level function
-					if(top_function !== null) {
-						functions[top_function] = true;
+					if(chain.length) {
+						var index = chain[chain.length - 1];
+
+						dependents[index] = true;
 					}
 
-					return current_value;
+					return value;
 				}
-
-				// Setting the value
-				if(current_value !== value) {
-					current_value = value;
-					trigger_function();
+				else if(value !== new_value) {
+					value = new_value;
+					trigger(dependents);
 				}
 			};
 
-			reactor.trigger = trigger_function;
+			reactor.trigger = trigger.bind(null, dependents);
 
 			return reactor;
 		}
-
-		if(typeof fn !== 'function') {
-			return;
+		else if(typeof value === 'function') {
+			call(functions.push(value) - 1);
 		}
-
-		// Called as a top-level function
-		if(top_function === null) {
-			top_function = top_functions.length;
-
-			top_functions.push(fn);
-
-			fn();
-
-			top_function = null;
-
-			return;
-		}
-
-		// Called as a nested function
-		fn();
 	}
 
 	/**
-	 * Queues a re-run of all functions dependent on a reactive variable
+	 * Queues up reactive functions and schedules a reaction
+	 * @param {Object} functions The reactive functions to queue
 	 */
-	function trigger() {
-		for(var index in this) {
-			pending_functions[index] = true;
+	function trigger(functions) {
+		for(var index in functions) {
+			pending[index] = true;
 		}
 
-		if(animation_frame === null) {
-			animation_frame = setTimeout(reaction, 0);
+		if(timeout === null) {
+			timeout = setTimeout(reaction, 0);
 		}
 	}
 
 	/**
-	 * Runs all pending functions triggered by reactive variables
+	 * Runs all scheduled reactive functions
 	 */
 	function reaction() {
-		var functions = pending_functions;
+		var functions = pending;
 
-		pending_functions = {};
-		animation_frame  = null;
+		pending = {};
+		timeout = null;
 
 		for(var index in functions) {
-			top_function = index;
-
-			top_functions[index]();
+			call(index);
 		}
+	}
 
-		top_function = null;
+	/**
+	 * Calls a function based on its index
+	 * @param  {Number} index The index of the function
+	 */
+	function call(index) {
+		chain.push(index);
+		functions[index]();
+		chain.pop();
 	}
 }(this));

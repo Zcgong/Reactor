@@ -16,13 +16,15 @@
 
 		<div>
 			Random Number: <span class="random-number-text"></span>
+			<button class="random-number-button">Generate</button>
 		</div>
 
 		<script>
 			(function() {
-				var first_name_input   = document.querySelector('.first-name-input');
-				var first_name_text    = document.querySelector('.first-name-text');
-				var random_number_text = document.querySelector('.random-number-text');
+				var first_name_input     = document.querySelector('.first-name-input');
+				var first_name_text      = document.querySelector('.first-name-text');
+				var random_number_button = document.querySelector('.random-number-button');
+				var random_number_text   = document.querySelector('.random-number-text');
 
 				var first_name             = new Reactor('stranger');
 				var generate_random_number = new Reactor();
@@ -31,22 +33,23 @@
 				first_name_input.addEventListener('change', function() {
 					// Set the value of first_name to the user's input
 					first_name(this.value);
+				});
 
-					// Manually trigger a reaction to generate a new random number
+				random_number_button.addEventListener('click', function() {
 					generate_random_number.trigger();
 				});
 
 				// Set the first name text to what the user typed in
 				Reactor(function() {
 					first_name_text.innerHTML = first_name() || 'stranger';
-				});
 
-				// Set the random number text to a random number
-				Reactor(function() {
-					// Depend on the generate_random_number Reactor
-					generate_random_number();
+					// Reactors can be nested
+					Reactor(function() {
+						// Depend on the generate_random_number Reactor
+						generate_random_number();
 
-					random_number_text.innerHTML = Math.random();
+						random_number_text.innerHTML = Math.random();
+					});
 				});
 			}());
 		</script>

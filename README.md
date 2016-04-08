@@ -39,7 +39,7 @@ Reactor(function() {
 my_name('Bobby');
 ```
 
-Output:
+**Output:**
 ```
 Sammy
 Bobby
@@ -47,7 +47,7 @@ Bobby
 
 ## Slow Start
 
-#### Creating Reactors
+### Creating Reactors
 
 Reactors are created using ***new Reactor()***. They can hold values and can optionally be initialized with a default value.
 
@@ -61,7 +61,7 @@ console.log(my_name());
 console.log(my_age());
 ```
 
-Output:
+**Output:**
 ```
 Sammy
 24
@@ -70,12 +70,11 @@ Sammy
 > **NOTE:** You must use the *new* keyword when creating a Reactor
 
 
-#### Creating Reactor Functions
+### Creating Reactor Functions
 
 Reactor Functions are created using ***Reactor(&lt;function&gt;)***. Within the passed in function, if a Reactor's value is retrieved, the function is registered as dependent on that value and will be re-run when the value changes.
 
-Reactor Functions can contain any number of Reactors.
-Reactors can be used within any number of Reactor Functions.
+Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
 ```javascript
 // This function is dependent on my_name and my_age
@@ -97,7 +96,7 @@ Reactor(function() {
 > **NOTE:** Do not use the *new* keyword when creating a Reactor Function
 
 
-#### Triggering a Reaction
+### Triggering a Reaction
 
 Any time a Reactor's value is changed, all functions dependent on it will be re-run. This is called a reaction. A reaction only occurs if the new value fails a strict equality comparison with the previous value. A reaction can also be triggered without changing the value by calling **&lt;Reactor&gt;.trigger()**.
 
@@ -128,14 +127,64 @@ my_options({foo : true});
 ```
 
 
-#### Reaction timing and order
+### Nested Reactor Functions
 
-When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically a few milliseconds). This is to avoid recursion and to aggregrate rapid changes to multiple Reactors in a single reaction.
+Reactors are bound to their closest parent Reactor Functions. If a Reactor Function is nested within another Reactor Function, dependencies within the inner function will not trigger a reaction on the outer function.
 
-For simplicity, the order in which Reactor Functions are executed in a reaction is arbitrary. This is because the order of multiple Reactor Functions with shared Reactor dependencies becomes confusing, unpredictable, and not very useful in practical situations. Your Reactor Functions should be isolated units capable of being called at any time in any order.
+The following example helps to better explain it:
+
+```javascript
+var inner = new Reactor('Inner');
+
+Reactor(function() {
+	console.log('Outer');
+
+	Reactor(function() {
+		console.log(inner());
+	});
+});
+
+inner.trigger();
+```
+
+**Output:**
+```
+Outer
+Inner
+Inner
+```
+
+As you can see, triggering the inner dependency does not cause the outer function to run.
+
+Here is a slightly more complex example:
+
+```javascript
+var outer = new Reactor('Outer');
+var inner = new Reactor('Inner');
+
+Reactor(function() {
+	console.log(outer());
+
+	Reactor(function() {
+		console.log(inner());
+	});
+});
+
+outer.trigger();
+inner.trigger();
+```
+
+**Output:**
+```
+Outer
+Inner
+Outer
+Inner
+Inner
+```
 
 
-#### Reactors without values
+### Reactors without values
 
 Reactors do not need to have values. In some cases, it's useful to have a Reactor whose sole purpose is to activate Reactor Functions explicitly (similar to the pub/sub pattern).
 
@@ -155,24 +204,32 @@ Reactor(function() {
 generate_random_number.trigger();
 ```
 
+
+### Reaction timing and order
+
+When a reaction is triggered, it is not executed immediately. Instead, it is scheduled for the next time the client is idle (typically a few milliseconds). This is to avoid recursion and to aggregrate rapid changes to multiple Reactors in a single reaction.
+
+For simplicity, the order in which Reactor Functions are executed in a reaction is arbitrary. This is because the order of multiple Reactor Functions with shared Reactor dependencies becomes confusing, unpredictable, and not very useful in practical situations. Your Reactor Functions should be isolated units capable of being called at any time in any order.
+
+
 ## API
 
-#### Reactor(function)
+### Reactor(function)
 
 Runs a function. If a Reactor's value is retrieved within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
 
-#### new Reactor([default_value])
+### new Reactor([default_value])
 
 Creates a new Reactor with an optional default value
 
-#### *&lt;Reactor&gt;*()
+### *&lt;Reactor&gt;*()
 
 Returns the value of a Reactor
 
-#### *&lt;Reactor&gt;*(value)
+### *&lt;Reactor&gt;*(value)
 
 Sets the value of a Reactor. If the value is not strictly equal to the previous value, a reaction is scheduled.
 
-#### *&lt;Reactor&gt;*.trigger()
+### *&lt;Reactor&gt;*.trigger()
 
 Triggers a reaction without setting the Reactor's value
