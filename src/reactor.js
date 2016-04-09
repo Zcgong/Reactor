@@ -65,7 +65,7 @@
 	}
 
 	/**
-	 * Queues up reactive functions and schedules a reaction
+	 * Adds a reactive variable to the queue to be processed in the next reaction
 	 */
 	function trigger() {
 		pending[this.id] = this;
@@ -101,6 +101,10 @@
 		}
 	}
 
+	/**
+	 * Calls a reactive function
+	 * @param {Object} fn The reactive function to call
+	 */
 	function call(fn) {
 		var previous = current;
 
@@ -113,6 +117,10 @@
 		current = previous;
 	}
 
+	/**
+	 * Clears a reactive function's dependencies and nested reactive functions
+	 * @param {Object} fn The reactive function to clear
+	 */
 	function clear(fn) {
 		for(var id in fn.reactors) {
 			delete fn.reactors[id].dependents[fn.id];
