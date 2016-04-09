@@ -127,63 +127,6 @@ my_options({foo : true});
 ```
 
 
-### Nested Reactor Functions
-
-Reactors are bound to their closest parent Reactor Functions. If a Reactor Function is nested within another Reactor Function, dependencies within the inner function will not trigger a reaction on the outer function.
-
-The following example helps to better explain it:
-
-```javascript
-var inner = new Reactor('Inner');
-
-Reactor(function() {
-	console.log('Outer');
-
-	Reactor(function() {
-		console.log(inner());
-	});
-});
-
-inner.trigger();
-```
-
-**Output:**
-```
-Outer
-Inner
-Inner
-```
-
-As you can see, triggering the inner dependency does not cause the outer function to run.
-
-Here is a slightly more complex example:
-
-```javascript
-var outer = new Reactor('Outer');
-var inner = new Reactor('Inner');
-
-Reactor(function() {
-	console.log(outer());
-
-	Reactor(function() {
-		console.log(inner());
-	});
-});
-
-outer.trigger();
-inner.trigger();
-```
-
-**Output:**
-```
-Outer
-Inner
-Outer
-Inner
-Inner
-```
-
-
 ### Reactors without values
 
 Reactors do not need to have values. In some cases, it's useful to have a Reactor whose sole purpose is to activate Reactor Functions explicitly (similar to the pub/sub pattern).
