@@ -94,7 +94,7 @@
 
 					var fn = reactor.dependents[fn_id];
 
-					clear(fn, functions);
+					clear(fn);
 					call(fn);
 				}
 			}
