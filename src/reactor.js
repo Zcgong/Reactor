@@ -60,6 +60,7 @@
 				body     : value,
 				reactors : {},
 				children : {},
+				parent   : null,
 			});
 		}
 	}
@@ -89,14 +90,16 @@
 			var reactor = reactors[id];
 
 			for(var fn_id in reactor.dependents) {
-				if(!functions[fn_id]) {
-					functions[fn_id] = true;
+				functions[fn_id] = reactor.dependents[fn_id];
+			}
+		}
 
-					var fn = reactor.dependents[fn_id];
+		for(var id in functions) {
+			var fn = functions[id];
 
-					clear(fn);
-					call(fn);
-				}
+			if(!fn.parent || !functions[fn.parent.id]) {
+				clear(fn);
+				call(fn);
 			}
 		}
 	}
@@ -106,19 +109,43 @@
 	 * @param {Object} fn The reactive function to call
 	 */
 	function call(fn) {
-		var previous = current;
-
 		if(current) {
+			fn.parent               = current;
 			current.children[fn.id] = fn;
 		}
 
+		var previous = current;
+
 		current = fn;
-		fn.body();
+
+		var error = tryFunction(fn.body);
+
 		current = previous;
+
+		if(error) {
+			throw error;
+		}
 	}
 
 	/**
-	 * Clears a reactive function's dependencies and nested reactive functions
+	 * Calls a function in an isolated try/catch. See link below for details.
+	 * https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#2-unsupported-syntax
+	 * @param  {Function}   fn The function to run
+	 * @return {Error|null}    Any error that occurred
+	 */
+	function tryFunction(fn) {
+		try {
+			fn();
+		}
+		catch(e) {
+			return e;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Clears a reactive function's dependencies and child reactive functions
 	 * @param {Object} fn The reactive function to clear
 	 */
 	function clear(fn) {
