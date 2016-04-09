@@ -21,10 +21,10 @@
 		context.Reactor = Reactor;
 	}
 
-	var functions = [];
-	var chain     = [];
-	var pending   = {};
-	var timeout   = null;
+	var counter = 0;
+	var current = null;
+	var pending = {};
+	var timeout = null;
 
 	/**
 	 * As a constructor: Creates a reactive variable with an optional default value
@@ -33,41 +33,42 @@
 	 */
 	function Reactor(value) {
 		if(this instanceof Reactor) {
-			var dependents = {};
-
 			var reactor = function Reactor(new_value) {
 				if(!arguments.length) {
-					if(chain.length) {
-						var index = chain[chain.length - 1];
-
-						dependents[index] = true;
+					if(current) {
+						reactor.dependents[current.id] = current;
+						current.reactors[reactor.id]   = reactor;
 					}
 
 					return value;
 				}
 				else if(value !== new_value) {
 					value = new_value;
-					trigger(dependents);
+					reactor.trigger();
 				}
 			};
 
-			reactor.trigger = trigger.bind(null, dependents);
+			reactor.id         = counter++;
+			reactor.dependents = {};
+			reactor.trigger    = trigger.bind(reactor);
 
 			return reactor;
 		}
 		else if(typeof value === 'function') {
-			call(functions.push(value) - 1);
+			call({
+				id       : counter++,
+				body     : value,
+				reactors : {},
+				children : {},
+			});
 		}
 	}
 
 	/**
 	 * Queues up reactive functions and schedules a reaction
-	 * @param {Object} functions The reactive functions to queue
 	 */
-	function trigger(functions) {
-		for(var index in functions) {
-			pending[index] = true;
-		}
+	function trigger() {
+		pending[this.id] = this;
 
 		if(timeout === null) {
 			timeout = setTimeout(reaction, 0);
@@ -78,23 +79,50 @@
 	 * Runs all scheduled reactive functions
 	 */
 	function reaction() {
-		var functions = pending;
+		var reactors  = pending;
+		var functions = {};
 
 		pending = {};
 		timeout = null;
 
-		for(var index in functions) {
-			call(index);
+		for(var id in reactors) {
+			var reactor = reactors[id];
+
+			for(var fn_id in reactor.dependents) {
+				if(!functions[fn_id]) {
+					functions[fn_id] = true;
+
+					var fn = reactor.dependents[fn_id];
+
+					clear(fn, functions);
+					call(fn);
+				}
+			}
 		}
 	}
 
-	/**
-	 * Calls a function based on its index
-	 * @param {Number} index The index of the function
-	 */
-	function call(index) {
-		chain.push(index);
-		functions[index]();
-		chain.pop();
+	function call(fn) {
+		var previous = current;
+
+		if(current) {
+			current.children[fn.id] = fn;
+		}
+
+		current = fn;
+		fn.body();
+		current = previous;
+	}
+
+	function clear(fn) {
+		for(var id in fn.reactors) {
+			delete fn.reactors[id].dependents[fn.id];
+		}
+
+		for(var id in fn.children) {
+			clear(fn.children[id]);
+		}
+
+		fn.reactors = {};
+		fn.children = {};
 	}
 }(this));
