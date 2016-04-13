@@ -49,7 +49,7 @@ Bobby
 
 ### Creating Reactors
 
-Reactors are created using ***new Reactor()***. They can hold values and can optionally be initialized with a default value.
+Reactors are created using ***new Reactor([default_value])***. They can hold values and can optionally be initialized with a default value.
 
 ```javascript
 var my_name = new Reactor();
