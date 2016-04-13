@@ -72,7 +72,7 @@ Sammy
 
 ### Creating Reactor Functions
 
-Reactor Functions are creating using ***Reactor(function, [context])***. The runs the function immediately. Within the passed in function, if a Reactor's value is retrieved, the function is registered as dependent on that value and will be re-run when the value changes.
+Reactor Functions are creating using ***Reactor(function, [context])***. This runs the function immediately. Within the passed in function, if a Reactor's value is retrieved, the function is registered as dependent on that value and will be re-run when the value changes.
 
 Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
