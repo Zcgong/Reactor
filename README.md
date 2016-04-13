@@ -72,7 +72,7 @@ Sammy
 
 ### Creating Reactor Functions
 
-Reactor Functions are created using ***Reactor(&lt;function&gt;)***. Within the passed in function, if a Reactor's value is retrieved, the function is registered as dependent on that value and will be re-run when the value changes.
+Reactor Functions are creating using ***Reactor(function, [context])***. The runs the function immediately. Within the passed in function, if a Reactor's value is retrieved, the function is registered as dependent on that value and will be re-run when the value changes.
 
 Reactor Functions can contain any number of Reactors. Conversely, Reactors can be used within any number of Reactor Functions.
 
@@ -155,11 +155,43 @@ When a reaction is triggered, it is not executed immediately. Instead, it is sch
 For simplicity, the order in which Reactor Functions are executed in a reaction is arbitrary. This is because the order of multiple Reactor Functions with shared Reactor dependencies becomes confusing, unpredictable, and not very useful in practical situations. Your Reactor Functions should be isolated units capable of being called at any time in any order.
 
 
+## Examples
+
+### Linking a Reactor to an input
+
+```javascript
+var name       = new Reactor('Sammy');
+var name_input = document.getElementById('name-input');
+
+Reactor(function() {
+	name_input.value = name.value();
+});
+
+name_input.addEventListener('change', function() {
+	name(this.value);
+});
+```
+
+### Rendering a [Handlebars](http://handlebarsjs.com/) template
+
+```javascript
+var template  = Handlebars.compile(user_info_template);
+var container = document.getElementById('user-info-container');
+
+Reactor(function() {
+	container.innerHTML = template({
+		first_name : first_name(),
+		last_name  : last_name(),
+	});
+});
+```
+
+
 ## API
 
-### Reactor(function)
+### Reactor(function, [context])
 
-Runs a function. If a Reactor's value is retrieved within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
+Runs a function with an optional context. If a Reactor's value is retrieved within the function, the function is registered as dependent on the Reactor and will be re-run if a reaction is triggered.
 
 ### new Reactor([default_value])
 
